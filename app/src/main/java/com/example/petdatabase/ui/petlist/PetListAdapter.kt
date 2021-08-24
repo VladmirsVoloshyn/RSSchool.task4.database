@@ -5,6 +5,8 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -13,7 +15,8 @@ import com.example.petdatabase.model.Pet
 
 class PetListAdapter(
     private val listPets: ArrayList<Pet>,
-    private val context: Context
+    private val context: Context,
+    private val listener : OnDeleteClickListener? = null
 ) : RecyclerView.Adapter<PetListAdapter.PetViewHolder>() {
 
     private val layoutInflater: LayoutInflater = LayoutInflater.from(context)
@@ -31,15 +34,14 @@ class PetListAdapter(
         holder.textGender?.text = GENDER_PATTERN + listPets[position].gender
         holder.textType?.text =  TYPE_PATTERN + listPets[position].type
 
-
         when(listPets[position].type){
-            RACCOON -> holder.imageView?.setImageResource(R.drawable.raccoon)
-            DOG -> holder.imageView?.setImageResource(R.drawable.dog)
-            CAT -> holder.imageView?.setImageResource(R.drawable.cat)
-            HORSE -> holder.imageView?.setImageResource(R.drawable.horse)
-            SPIDER -> holder.imageView?.setImageResource(R.drawable.spider)
-            LIZARD -> holder.imageView?.setImageResource(R.drawable.lizard)
-            PIG -> holder.imageView?.setImageResource(R.drawable.pig)
+            RACCOON -> holder.imageView?.setImageResource(R.drawable.raccoon_grey)
+            DOG -> holder.imageView?.setImageResource(R.drawable.grey_dog)
+            CAT -> holder.imageView?.setImageResource(R.drawable.cat_grey)
+            HORSE -> holder.imageView?.setImageResource(R.drawable.horse_grey)
+            SPIDER -> holder.imageView?.setImageResource(R.drawable.spider_grey)
+            LIZARD -> holder.imageView?.setImageResource(R.drawable.lizard_grey)
+            PIG -> holder.imageView?.setImageResource(R.drawable.pig_grey)
         }
 
     }
@@ -52,6 +54,7 @@ class PetListAdapter(
         var textGender: TextView? = null
         var textType: TextView? = null
         var imageView : ImageView? = null
+        var deleteButton : ImageButton? = null
 
         init {
             textName =itemView.findViewById(R.id.pet_name)
@@ -59,8 +62,19 @@ class PetListAdapter(
             textAge = itemView.findViewById(R.id.pet_age)
             textType = itemView.findViewById(R.id.pet_type)
             imageView = itemView.findViewById(R.id.pet_avatar)
+            deleteButton = itemView.findViewById(R.id.delete_button)
+            deleteButton?.setOnClickListener {
+                listener?.onDeleteClick(adapterPosition)
+            }
         }
+
+
     }
+
+    interface OnDeleteClickListener{
+        fun onDeleteClick(position: Int)
+    }
+
     companion object{
         private const val NAME_PATTERN = "Name : "
         private const val AGE_PATTERN = "Age : "

@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
 import com.example.petdatabase.databinding.AddPetDialogFragmentBinding
 import com.example.petdatabase.model.Pet
+import com.example.petdatabase.shouldShowError
 
 class AddFragment : DialogFragment() {
 
@@ -90,15 +91,25 @@ class AddFragment : DialogFragment() {
         binding.petTypeList.adapter = typeAdapter
 
         binding.buttonAdd.setOnClickListener {
-            listener?.onPetAdd(
-                Pet(
-                    binding.petNameEdit.text.toString(),
-                    binding.petAgeEdit.text.toString().toInt(),
-                    gender,
-                    type
+
+            if (!binding.petNameEdit.shouldShowError(
+                    "Please, set name",
+                    binding.textInputLayoutName
+                ) && !binding.petAgeEdit.shouldShowError(
+                    "Please, set age",
+                    binding.textInputLayoutAge
                 )
-            )
-            dialog?.dismiss()
+            ) {
+                listener?.onPetAdd(
+                    Pet(
+                        name = binding.petNameEdit.text.toString(),
+                        age = binding.petAgeEdit.text.toString().toInt(),
+                        gender = gender,
+                        type = type
+                    )
+                )
+                dialog?.dismiss()
+            }
         }
         binding.buttonSkip.setOnClickListener {
             dialog?.dismiss()

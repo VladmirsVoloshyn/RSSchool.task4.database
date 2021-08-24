@@ -25,7 +25,7 @@ class DatabaseManager(context: Context) {
     }
 
     fun addPet(pet: Pet) {
-        (pet as Pet).apply {
+        pet.apply {
             contentValues.put(PetsDataBase.KEY_NAME, name)
             contentValues.put(PetsDataBase.KEY_TYPE, type)
             contentValues.put(PetsDataBase.KEY_GENDER, gender)
@@ -47,7 +47,7 @@ class DatabaseManager(context: Context) {
             val type = cursor.getColumnIndex(PetsDataBase.KEY_TYPE)
             do {
                 listPets.add(
-                    Pet(
+                    Pet(cursor.getInt(id),
                         cursor.getString(name),
                         cursor.getInt(age),
                         cursor.getString(gender),
@@ -58,5 +58,16 @@ class DatabaseManager(context: Context) {
         }
         Log.d("DataBase", "add new element")
         cursor.close()
+    }
+
+    fun delete(position : Int){
+            val id: Int = getPetsList()[position].id
+            val delCount = sqLiteDatabase.delete(
+                PetsDataBase.TABLE_PETS,
+                PetsDataBase.KEY_ID.toString() + "= " + id,
+                null
+            )
+            Log.d("mLog", "delete rows count = $delCount")
+            fillListPets()
     }
 }

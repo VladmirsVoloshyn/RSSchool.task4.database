@@ -3,4 +3,15 @@
     <string name="set_pet_age">Set pet age</string>
     <string name="set_pet_name">Set pet name</string>
     <string name="todo">TODO</string>
+    <string name="delete_item_when_click">Delete item when click</string>
+    <string name="pet_type">pet type:</string>
+    <string name="pet_gender">pet gender:</string>
+    <string name="pet_age">pet age:</string>
+    <string name="pet_name">pet name:</string>
+    <string name="set_pet_data">Set pet data</string>
+    <string name="skip">skip</string>
+    <string name="add">add</string>
+    <string name="open_the_fragment_to_add_new_pet">Open the fragment to add new pet</string>
+    <string name="pets_database">Pets database</string>
+    <string name="open_preference_fragment_to_set_filter">Open preference fragment to set filter</string>
 </resources>
