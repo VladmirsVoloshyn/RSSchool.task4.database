@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <ListPreference
+        android:defaultValue="None"
+        android:key="sort"
+        app:title="Pet list sort preference"
+        android:summary="Select a sorting criterion"
+        android:entries="@array/sort_pref_values"
+        android:entryValues="@array/sort_pref_values"
+        app:icon="@drawable/ic_baseline_filter_alt_24"
+        />
+</PreferenceScreen>

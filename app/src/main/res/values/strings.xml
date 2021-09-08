@@ -14,4 +14,13 @@
     <string name="open_the_fragment_to_add_new_pet">Open the fragment to add new pet</string>
     <string name="pets_database">Pets database</string>
     <string name="open_preference_fragment_to_set_filter">Open preference fragment to set filter</string>
+
+
+
+    <string-array name="sort_pref_values">
+        <item>None</item>
+        <item>Age</item>
+        <item>Name</item>
+    </string-array>
+
 </resources>

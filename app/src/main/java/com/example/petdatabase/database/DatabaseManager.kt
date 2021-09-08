@@ -61,10 +61,9 @@ class DatabaseManager(context: Context) {
     }
 
     fun delete(position : Int){
-            val id: Int = getPetsList()[position].id
             val delCount = sqLiteDatabase.delete(
                 PetsDataBase.TABLE_PETS,
-                PetsDataBase.KEY_ID.toString() + "= " + id,
+                PetsDataBase.KEY_ID + "= " + position,
                 null
             )
             Log.d("mLog", "delete rows count = $delCount")
