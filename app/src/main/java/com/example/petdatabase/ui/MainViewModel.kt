@@ -3,14 +3,13 @@ package com.example.petdatabase.ui
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.petdatabase.database.DatabaseManager
+import com.example.petdatabase.sqlitedatabase.DatabaseManager
 import com.example.petdatabase.model.Pet
 import com.example.petdatabase.util.ListPetSort
 
 class MainViewModel : ViewModel() {
 
     private var petList: MutableLiveData<ArrayList<Pet>> = MutableLiveData()
-    private lateinit var context : Context
     private lateinit var dataBaseManager : DatabaseManager
 
     fun addPet(pet : Pet) {
@@ -34,8 +33,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun initialize(mContext : Context) {
-        this.context = mContext
-        dataBaseManager = DatabaseManager(context)
+        dataBaseManager = DatabaseManager(mContext)
     }
 
 }

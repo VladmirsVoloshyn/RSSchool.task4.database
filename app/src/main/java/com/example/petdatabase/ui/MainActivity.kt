@@ -5,10 +5,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.RelativeLayout
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.petdatabase.PetsApplication
 import com.example.petdatabase.databinding.ActivityMainBinding
 import com.example.petdatabase.model.Pet
 import com.example.petdatabase.ui.petlist.PetListAdapter
@@ -17,12 +19,15 @@ import com.example.petdatabase.ui.preference.SettingsActivity
 import com.example.petdatabase.util.ListPetSort
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class MainActivity : AppCompatActivity(), AddFragment.OnAddPetListener, PetListAdapter.OnDeleteClickListener {
+class MainActivity : AppCompatActivity(), AddFragment.OnAddPetListener,
+    PetListAdapter.OnDeleteClickListener {
 
     private lateinit var binding: ActivityMainBinding
-    private var viewModel = MainViewModel()
-    private var petListAdapter : PetListAdapter? = null
-    private lateinit var sortMethod : String
+    private val viewModel: MainViewModel by viewModels {
+        MainViewModelFactory()
+    }
+    private var petListAdapter: PetListAdapter? = null
+    private lateinit var sortMethod: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,14 +36,12 @@ class MainActivity : AppCompatActivity(), AddFragment.OnAddPetListener, PetListA
 
         val preferences = PreferenceManager.getDefaultSharedPreferences(this)
         sortMethod = preferences.getString(SORT_KEY, DEFAULT_SORT_METHOD)!!
-
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        viewModel.initialize(this)
+        viewModel.initialize(application as PetsApplication)
 
         viewModel.getData(sortMethod).observe(this, {
-               petListAdapter = PetListAdapter(it, this, this)
-               binding.petList.adapter = petListAdapter
-               binding.petList.layoutManager = LinearLayoutManager(this)
+            petListAdapter = PetListAdapter(it, this, this)
+            binding.petList.adapter = petListAdapter
+            binding.petList.layoutManager = LinearLayoutManager(this)
         })
         binding.addButton.setOnClickListener {
             val addFragment = AddFragment()
