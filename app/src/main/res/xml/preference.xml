@@ -10,4 +10,14 @@
         android:entryValues="@array/sort_pref_values"
         app:icon="@drawable/ic_baseline_filter_alt_24"
         />
+
+    <ListPreference
+        android:defaultValue="Room"
+        android:key="impl"
+        app:title="Database implementation"
+        android:summary="Select a database implementation"
+        android:entries="@array/database_impl"
+        android:entryValues="@array/database_impl"
+        app:icon="@drawable/ic_baseline_filter_alt_24"
+        />
 </PreferenceScreen>

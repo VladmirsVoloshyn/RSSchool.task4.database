@@ -23,4 +23,9 @@
         <item>Name</item>
     </string-array>
 
+    <string-array name="database_impl">
+        <item>Room</item>
+        <item>Cursor</item>
+    </string-array>
+
 </resources>

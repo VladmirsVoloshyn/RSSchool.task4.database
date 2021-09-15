@@ -12,7 +12,7 @@ import com.example.petdatabase.databinding.AddPetDialogFragmentBinding
 import com.example.petdatabase.model.Pet
 import com.example.petdatabase.shouldShowError
 
-class AddFragment : DialogFragment() {
+class AddFragment(private val callKey : String, val pet: Pet) : DialogFragment() {
 
     var mBinding: AddPetDialogFragmentBinding? = null
     private val binding get() = mBinding!!
@@ -26,7 +26,14 @@ class AddFragment : DialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         mBinding = AddPetDialogFragmentBinding.inflate(layoutInflater, container, false)
+
+        if (callKey == "new"){
+            binding.buttonAdd.text = "Add"
+        }else{
+            binding.buttonAdd.text = "Update"
+        }
         return binding.root
+
     }
 
     override fun onAttach(context: Context) {
@@ -100,7 +107,7 @@ class AddFragment : DialogFragment() {
                     binding.textInputLayoutAge
                 )
             ) {
-                listener?.onPetAdd(
+                if (callKey == "new"){ listener?.onPetAdd(
                     Pet(
                         name = binding.petNameEdit.text.toString(),
                         age = binding.petAgeEdit.text.toString().toInt(),
@@ -108,6 +115,16 @@ class AddFragment : DialogFragment() {
                         type = type
                     )
                 )
+            }else{
+                    listener?.onPetEdit(
+                        Pet(id = pet.id,
+                            name = binding.petNameEdit.text.toString(),
+                            age = binding.petAgeEdit.text.toString().toInt(),
+                            gender = gender,
+                            type = type
+                        )
+                    )
+            }
                 dialog?.dismiss()
             }
         }
@@ -119,5 +136,6 @@ class AddFragment : DialogFragment() {
 
     interface OnAddPetListener {
         fun onPetAdd(pet: Pet)
+        fun onPetEdit(pet : Pet)
     }
 }

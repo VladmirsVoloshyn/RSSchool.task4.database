@@ -5,7 +5,6 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
@@ -14,8 +13,8 @@ import com.example.petdatabase.R
 import com.example.petdatabase.model.Pet
 
 class PetListAdapter(
-    private val listPets: ArrayList<Pet>,
-    private val context: Context,
+    private var listPets: List<Pet>,
+    context: Context,
     private val listener : OnDeleteClickListener? = null
 ) : RecyclerView.Adapter<PetListAdapter.PetViewHolder>() {
 
@@ -24,7 +23,6 @@ class PetListAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PetViewHolder {
         return PetViewHolder(layoutInflater.inflate(R.layout.pet_item_container, parent, false))
-
     }
 
     @SuppressLint("SetTextI18n")
@@ -55,6 +53,7 @@ class PetListAdapter(
         var textType: TextView? = null
         var imageView : ImageView? = null
         var deleteButton : ImageButton? = null
+        var editButton : ImageButton? = null
 
         init {
             textName =itemView.findViewById(R.id.pet_name)
@@ -63,8 +62,14 @@ class PetListAdapter(
             textType = itemView.findViewById(R.id.pet_type)
             imageView = itemView.findViewById(R.id.pet_avatar)
             deleteButton = itemView.findViewById(R.id.delete_button)
+            editButton = itemView.findViewById(R.id.edit_button)
+
             deleteButton?.setOnClickListener {
                 listener?.onDeleteClick(adapterPosition)
+            }
+
+            editButton?.setOnClickListener {
+                listener?.onEditClick(listPets[adapterPosition])
             }
         }
 
@@ -73,6 +78,8 @@ class PetListAdapter(
 
     interface OnDeleteClickListener{
         fun onDeleteClick(position: Int)
+
+        fun onEditClick(pet : Pet)
     }
 
     companion object{
