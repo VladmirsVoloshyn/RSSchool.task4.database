@@ -4,13 +4,16 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.fragment.app.FragmentTransaction
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.petdatabase.PetsApplication
 import com.example.petdatabase.databinding.ActivityMainBinding
 import com.example.petdatabase.model.Pet
+import com.example.petdatabase.ui.cursorui.CursorFragment
 import com.example.petdatabase.ui.petlist.PetListAdapter
 import com.example.petdatabase.ui.preference.SettingsActivity
+import com.example.petdatabase.ui.roomui.RoomFragment
 
 class MainActivity : AppCompatActivity(), AddFragment.OnAddPetListener,
     PetListAdapter.OnDeleteClickListener {
@@ -22,12 +25,38 @@ class MainActivity : AppCompatActivity(), AddFragment.OnAddPetListener,
     private var petListAdapter: PetListAdapter? = null
     private lateinit var sortMethod: String
     private lateinit var dbImpl: String
+    private var fragmentID = "room"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val preferences = PreferenceManager.getDefaultSharedPreferences(this)
+
+        val roomFragment = RoomFragment()
+        val fragmentTransaction : FragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction.replace(binding.petList.id,roomFragment).commit()
+        binding.baseLabelTextView.text = "Pet database (ROOM)"
+
+        binding.changeImplButton.setOnClickListener {
+            fragmentID = if (fragmentID == "room"){
+                val fragment = CursorFragment()
+                val fragmentTransaction : FragmentTransaction = supportFragmentManager.beginTransaction()
+                fragmentTransaction.replace(binding.petList.id,fragment ).commit()
+                binding.baseLabelTextView.text = "Pet database (CURSOR)"
+                "cursor"
+            }else{
+                val fragment = RoomFragment()
+                val fragmentTransaction : FragmentTransaction = supportFragmentManager.beginTransaction()
+                fragmentTransaction.replace(binding.petList.id,fragment ).commit()
+                binding.baseLabelTextView.text = "Pet database (ROOM)"
+                "room"
+            }
+        }
+
+
+
+
         sortMethod = preferences.getString(SORT_KEY, DEFAULT_SORT_METHOD)!!
         dbImpl = preferences.getString(IMPL_KEY, DEFAULT_DB_IMPL)!!
 
@@ -35,14 +64,9 @@ class MainActivity : AppCompatActivity(), AddFragment.OnAddPetListener,
 
         viewModel.getData(sortMethod, dbImpl).observe(this, {
             petListAdapter = PetListAdapter(it, this, this)
-            binding.petList.adapter = petListAdapter
-            binding.petList.layoutManager = LinearLayoutManager(this)
         })
 
-        binding.addButton.setOnClickListener {
-            val addFragment = AddFragment("new", Pet(999, "12", 12, "12", "12"))
-            addFragment.show(supportFragmentManager, "sdf")
-        }
+
 
         binding.preferenceFragmentButton.setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)
@@ -63,6 +87,7 @@ class MainActivity : AppCompatActivity(), AddFragment.OnAddPetListener,
         if (dbImpl == "Room") {
             viewModel.update(pet)
         } else {
+            viewModel.updatePet(pet)
         }
         viewModel.sort(sortMethod)
     }

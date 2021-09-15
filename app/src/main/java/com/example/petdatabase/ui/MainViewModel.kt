@@ -19,13 +19,18 @@ class MainViewModel(private val repository: PetsRepository) : ViewModel() {
     fun getData(sortMethod: String, impl: String): MutableLiveData<List<Pet>> {
         if (impl == "Room") {
             return repository.allPets.asLiveData() as MutableLiveData<List<Pet>>
-        } else if (impl == "Cursor")
+        } else if (impl == "Cursor") {
             petList.postValue(ListPetSort.sort(sortMethod, dataBaseManager.getPetsList()))
-        return  petList
+        }
+        return petList
     }
 
     fun sort(sortMethod: String) {
         petList.postValue(ListPetSort.sort(sortMethod, dataBaseManager.getPetsList()))
+    }
+
+    fun initialize(mContext: Context) {
+        dataBaseManager = DatabaseCursorManager(mContext)
     }
 
     //room impl
@@ -53,8 +58,9 @@ class MainViewModel(private val repository: PetsRepository) : ViewModel() {
         petList.postValue(dataBaseManager.getPetsList())
     }
 
-    fun initialize(mContext: Context) {
-        dataBaseManager = DatabaseCursorManager(mContext)
+    fun updatePet(pet: Pet) {
+        dataBaseManager.updateElement(pet)
     }
+
 
 }

@@ -8,7 +8,7 @@
     tools:context=".ui.MainActivity">
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/baseLabelTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -19,7 +19,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.recyclerview.widget.RecyclerView
+    <Button
+        android:id="@+id/changeImplButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:text="@string/change_implementation"
+        android:layout_marginBottom="13dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginLeft="5dp" />
+
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/pet_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -29,23 +40,7 @@
         app:layout_constraintBottom_toTopOf="@+id/guideline2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4"
-        tools:listitem="@layout/pet_item_container" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/add_button"
-        style="@style/Theme.AppCompat.Light"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="16dp"
-        android:clickable="true"
-        android:contentDescription="@string/open_the_fragment_to_add_new_pet"
-        android:focusable="true"
-        android:src="@android:drawable/ic_menu_add"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/baseLabelTextView" />
 
     <ImageButton
         android:id="@+id/preferenceFragmentButton"
