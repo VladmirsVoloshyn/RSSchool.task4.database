@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity(), AddFragment.OnAddOrEditPetListener,
         MainViewModelFactory((application as PetsApplication).repository)
     }
     private lateinit var sortMethod: String
-    private var listID = "room"
+    private var listID = ROOM_IMPL
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,16 +31,16 @@ class MainActivity : AppCompatActivity(), AddFragment.OnAddOrEditPetListener,
         val preferences = PreferenceManager.getDefaultSharedPreferences(this)
 
         binding.changeImplButton.setOnClickListener {
-            if (listID == "room"){
+            if (listID == ROOM_IMPL) {
                 binding.petListRoom.visibility = RecyclerView.GONE
                 binding.petListCursor.visibility = RecyclerView.VISIBLE
                 binding.baseLabelTextView.text = "Pet database (CURSOR)"
-                listID = "cursor"
-            }else {
+                listID = CURSOR_IMPL
+            } else {
                 binding.petListRoom.visibility = RecyclerView.VISIBLE
                 binding.petListCursor.visibility = RecyclerView.GONE
                 binding.baseLabelTextView.text = "Pet database (ROOM)"
-                listID = "room"
+                listID = ROOM_IMPL
             }
         }
 
@@ -48,7 +48,11 @@ class MainActivity : AppCompatActivity(), AddFragment.OnAddOrEditPetListener,
         viewModel.initialize(application as PetsApplication)
 
         viewModel.pets.observe(this, {
-            val petListAdapter = PetListAdapter(ListPetSort.sort(sortMethod, it.toCollection(ArrayList())), this, this)
+            val petListAdapter = PetListAdapter(
+                ListPetSort.sort(sortMethod, it.toCollection(ArrayList())),
+                this,
+                this
+            )
             binding.petListRoom.adapter = petListAdapter
             binding.petListRoom.layoutManager = LinearLayoutManager(applicationContext)
         })
@@ -60,8 +64,8 @@ class MainActivity : AppCompatActivity(), AddFragment.OnAddOrEditPetListener,
         })
 
         binding.addButton.setOnClickListener {
-            val addFragment = AddFragment("new", Pet(1,"123",123,"123","123"))
-            addFragment.show(supportFragmentManager, "sdf")
+            val addFragment = AddFragment("new", Pet())
+            addFragment.show(supportFragmentManager, "add")
         }
 
         binding.preferenceFragmentButton.setOnClickListener {
@@ -71,29 +75,30 @@ class MainActivity : AppCompatActivity(), AddFragment.OnAddOrEditPetListener,
     }
 
     override fun onPetAdd(pet: Pet) {
-        if (listID == "room") {
+        if (listID == ROOM_IMPL) {
             viewModel.insert(pet)
         }
-        if (listID == "cursor"){
+        if (listID == CURSOR_IMPL) {
             viewModel.addPet(pet)
         }
         viewModel.sort(sortMethod)
     }
 
     override fun onPetEdit(pet: Pet) {
-        if (listID == "room") {
+        if (listID == ROOM_IMPL) {
             viewModel.update(pet)
         }
-        if (listID == "cursor"){
+        if (listID == CURSOR_IMPL) {
             viewModel.updatePet(pet)
         }
         viewModel.sort(sortMethod)
     }
 
     override fun onDeleteClick(position: Int) {
-        if (listID == "room") {
+        if (listID == ROOM_IMPL) {
             viewModel.delete(position)
-        } else {
+        }
+        if (listID == CURSOR_IMPL) {
             viewModel.deletePet(position)
         }
         viewModel.sort(sortMethod)
@@ -101,7 +106,7 @@ class MainActivity : AppCompatActivity(), AddFragment.OnAddOrEditPetListener,
 
     override fun onEditClick(pet: Pet) {
         val addFragment = AddFragment("edit", pet)
-        addFragment.show(supportFragmentManager, "sdf")
+        addFragment.show(supportFragmentManager, "edit")
     }
 
     override fun onResume() {
@@ -113,8 +118,8 @@ class MainActivity : AppCompatActivity(), AddFragment.OnAddOrEditPetListener,
 
     companion object {
         const val DEFAULT_SORT_METHOD = "None"
-        const val DEFAULT_DB_IMPL = "Room"
         const val SORT_KEY = "sort"
-        const val IMPL_KEY = "impl"
+        const val ROOM_IMPL = "room"
+        const val CURSOR_IMPL = "cursor"
     }
 }
