@@ -4,28 +4,25 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
-import androidx.fragment.app.FragmentTransaction
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.petdatabase.PetsApplication
 import com.example.petdatabase.databinding.ActivityMainBinding
 import com.example.petdatabase.model.Pet
-import com.example.petdatabase.ui.cursorui.CursorFragment
 import com.example.petdatabase.ui.petlist.PetListAdapter
 import com.example.petdatabase.ui.preference.SettingsActivity
-import com.example.petdatabase.ui.roomui.RoomFragment
+import com.example.petdatabase.util.ListPetSort
 
-class MainActivity : AppCompatActivity(), AddFragment.OnAddPetListener,
-    PetListAdapter.OnDeleteClickListener {
+class MainActivity : AppCompatActivity(), AddFragment.OnAddOrEditPetListener,
+    PetListAdapter.OnPetListButtonClickListener {
 
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModels {
         MainViewModelFactory((application as PetsApplication).repository)
     }
-    private var petListAdapter: PetListAdapter? = null
     private lateinit var sortMethod: String
-    private lateinit var dbImpl: String
-    private var fragmentID = "room"
+    private var listID = "room"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,40 +30,39 @@ class MainActivity : AppCompatActivity(), AddFragment.OnAddPetListener,
         setContentView(binding.root)
         val preferences = PreferenceManager.getDefaultSharedPreferences(this)
 
-        val roomFragment = RoomFragment()
-        val fragmentTransaction : FragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.replace(binding.petList.id,roomFragment).commit()
-        binding.baseLabelTextView.text = "Pet database (ROOM)"
-
         binding.changeImplButton.setOnClickListener {
-            fragmentID = if (fragmentID == "room"){
-                val fragment = CursorFragment()
-                val fragmentTransaction : FragmentTransaction = supportFragmentManager.beginTransaction()
-                fragmentTransaction.replace(binding.petList.id,fragment ).commit()
+            if (listID == "room"){
+                binding.petListRoom.visibility = RecyclerView.GONE
+                binding.petListCursor.visibility = RecyclerView.VISIBLE
                 binding.baseLabelTextView.text = "Pet database (CURSOR)"
-                "cursor"
-            }else{
-                val fragment = RoomFragment()
-                val fragmentTransaction : FragmentTransaction = supportFragmentManager.beginTransaction()
-                fragmentTransaction.replace(binding.petList.id,fragment ).commit()
+                listID = "cursor"
+            }else {
+                binding.petListRoom.visibility = RecyclerView.VISIBLE
+                binding.petListCursor.visibility = RecyclerView.GONE
                 binding.baseLabelTextView.text = "Pet database (ROOM)"
-                "room"
+                listID = "room"
             }
         }
 
-
-
-
         sortMethod = preferences.getString(SORT_KEY, DEFAULT_SORT_METHOD)!!
-        dbImpl = preferences.getString(IMPL_KEY, DEFAULT_DB_IMPL)!!
-
         viewModel.initialize(application as PetsApplication)
 
-        viewModel.getData(sortMethod, dbImpl).observe(this, {
-            petListAdapter = PetListAdapter(it, this, this)
+        viewModel.pets.observe(this, {
+            val petListAdapter = PetListAdapter(ListPetSort.sort(sortMethod, it.toCollection(ArrayList())), this, this)
+            binding.petListRoom.adapter = petListAdapter
+            binding.petListRoom.layoutManager = LinearLayoutManager(applicationContext)
         })
 
+        viewModel.getData(sortMethod).observe(this, {
+            val petListAdapter = PetListAdapter(it, this, this)
+            binding.petListCursor.adapter = petListAdapter
+            binding.petListCursor.layoutManager = LinearLayoutManager(applicationContext)
+        })
 
+        binding.addButton.setOnClickListener {
+            val addFragment = AddFragment("new", Pet(1,"123",123,"123","123"))
+            addFragment.show(supportFragmentManager, "sdf")
+        }
 
         binding.preferenceFragmentButton.setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)
@@ -75,25 +71,27 @@ class MainActivity : AppCompatActivity(), AddFragment.OnAddPetListener,
     }
 
     override fun onPetAdd(pet: Pet) {
-        if (dbImpl == "Room") {
+        if (listID == "room") {
             viewModel.insert(pet)
-        } else {
+        }
+        if (listID == "cursor"){
             viewModel.addPet(pet)
         }
         viewModel.sort(sortMethod)
     }
 
     override fun onPetEdit(pet: Pet) {
-        if (dbImpl == "Room") {
+        if (listID == "room") {
             viewModel.update(pet)
-        } else {
+        }
+        if (listID == "cursor"){
             viewModel.updatePet(pet)
         }
         viewModel.sort(sortMethod)
     }
 
     override fun onDeleteClick(position: Int) {
-        if (dbImpl == "Room") {
+        if (listID == "room") {
             viewModel.delete(position)
         } else {
             viewModel.deletePet(position)
@@ -110,8 +108,6 @@ class MainActivity : AppCompatActivity(), AddFragment.OnAddPetListener,
         super.onResume()
         val preferences = PreferenceManager.getDefaultSharedPreferences(this)
         sortMethod = preferences.getString(SORT_KEY, DEFAULT_SORT_METHOD)!!
-        dbImpl = preferences.getString(IMPL_KEY, DEFAULT_DB_IMPL)!!
-        viewModel.getData(sortMethod,dbImpl)
         viewModel.sort(sortMethod)
     }
 

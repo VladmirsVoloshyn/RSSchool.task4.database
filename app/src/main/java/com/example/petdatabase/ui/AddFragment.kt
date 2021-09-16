@@ -16,7 +16,7 @@ class AddFragment(private val callKey : String, val pet: Pet) : DialogFragment()
 
     var mBinding: AddPetDialogFragmentBinding? = null
     private val binding get() = mBinding!!
-    private var listener: OnAddPetListener? = null
+    private var listener: OnAddOrEditPetListener? = null
     private var listGender = arrayOf("Male", "Female")
     private var listType = arrayOf("Cat", "Dog", "Horse", "Lizard", "Spider", "Raccoon", "Pig")
 
@@ -38,7 +38,7 @@ class AddFragment(private val callKey : String, val pet: Pet) : DialogFragment()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        listener = context as OnAddPetListener
+        listener = context as OnAddOrEditPetListener
     }
 
     override fun onDestroyView() {
@@ -134,7 +134,7 @@ class AddFragment(private val callKey : String, val pet: Pet) : DialogFragment()
 
     }
 
-    interface OnAddPetListener {
+    interface OnAddOrEditPetListener {
         fun onPetAdd(pet: Pet)
         fun onPetEdit(pet : Pet)
     }

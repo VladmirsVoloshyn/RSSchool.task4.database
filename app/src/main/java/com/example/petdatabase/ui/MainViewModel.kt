@@ -7,23 +7,15 @@ import com.example.petdatabase.room.PetsRepository
 import com.example.petdatabase.room.PetsRoomDatabase
 import com.example.petdatabase.sqlitedatabase.DatabaseCursorManager
 import com.example.petdatabase.util.ListPetSort
+import kotlinx.coroutines.flow.toCollection
 import kotlinx.coroutines.launch
 
 class MainViewModel(private val repository: PetsRepository) : ViewModel() {
 
-    private val pets: LiveData<List<Pet>> = repository.allPets.asLiveData()
-
+    val pets: LiveData<List<Pet>> = repository.allPets.asLiveData()
     private var petList: MutableLiveData<List<Pet>> = MutableLiveData()
     private lateinit var dataBaseManager: DatabaseCursorManager
 
-    fun getData(sortMethod: String, impl: String): MutableLiveData<List<Pet>> {
-        if (impl == "Room") {
-            return repository.allPets.asLiveData() as MutableLiveData<List<Pet>>
-        } else if (impl == "Cursor") {
-            petList.postValue(ListPetSort.sort(sortMethod, dataBaseManager.getPetsList()))
-        }
-        return petList
-    }
 
     fun sort(sortMethod: String) {
         petList.postValue(ListPetSort.sort(sortMethod, dataBaseManager.getPetsList()))
@@ -60,6 +52,11 @@ class MainViewModel(private val repository: PetsRepository) : ViewModel() {
 
     fun updatePet(pet: Pet) {
         dataBaseManager.updateElement(pet)
+    }
+
+    fun getData(sortMethod: String): MutableLiveData<List<Pet>> {
+        petList.postValue(ListPetSort.sort(sortMethod, dataBaseManager.getPetsList()))
+        return petList
     }
 
 

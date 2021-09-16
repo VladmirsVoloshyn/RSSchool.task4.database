@@ -15,7 +15,7 @@ import com.example.petdatabase.model.Pet
 class PetListAdapter(
     private var listPets: List<Pet>,
     context: Context,
-    private val listener : OnDeleteClickListener? = null
+    private val listener : OnPetListButtonClickListener? = null
 ) : RecyclerView.Adapter<PetListAdapter.PetViewHolder>() {
 
     private val layoutInflater: LayoutInflater = LayoutInflater.from(context)
@@ -76,7 +76,7 @@ class PetListAdapter(
 
     }
 
-    interface OnDeleteClickListener{
+    interface OnPetListButtonClickListener{
         fun onDeleteClick(position: Int)
 
         fun onEditClick(pet : Pet)

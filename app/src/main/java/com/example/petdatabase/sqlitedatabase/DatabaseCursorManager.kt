@@ -71,18 +71,14 @@ class DatabaseCursorManager(context: Context) {
     }
 
     fun updateElement(pet: Pet) {
-        if (pet.id.equals("")) {
-        }
         contentValues.put(PetsDataBase.KEY_NAME, pet.name)
         contentValues.put(PetsDataBase.KEY_AGE, pet.age)
-        contentValues.put(PetsDataBase.KEY_AGE, pet.type)
-        contentValues.put(PetsDataBase.KEY_AGE, pet.gender)
-        val updCount = sqLiteDatabase.update(
+        contentValues.put(PetsDataBase.KEY_TYPE, pet.type)
+        contentValues.put(PetsDataBase.KEY_GENDER, pet.gender)
+        sqLiteDatabase.update(
             PetsDataBase.TABLE_PETS,
             contentValues,
-            PetsDataBase.KEY_ID + "= ?",
-            null
-        )
+             "_id=?", Array(1){pet.id.toString()})
     }
 
 
